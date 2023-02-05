@@ -4,7 +4,6 @@ import { container } from 'styles/common/layout';
 import { palette } from 'styles/palette';
 import { FaLinkedinIn, FaGithub } from 'react-icons/fa';
 import Divider from 'components/common/Divider';
-
 const Footer = () => {
     return (
         <div css={footer}>
