@@ -3,6 +3,7 @@ import { IoClose } from 'react-icons/io5';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { setClose } from 'slices/modalSlice';
 import { css } from '@emotion/react';
+import QRCode from 'qrcode.react';
 
 const Modal = ({ qrValue, modalText = 'Klip App 또는 KakaoTalk을 이용해 주세요' }) => {
     const dispatch = useDispatch();
@@ -26,7 +27,7 @@ const Modal = ({ qrValue, modalText = 'Klip App 또는 KakaoTalk을 이용해 �
                     >
                         <IoClose size={18} />
                     </button>
-                    {/* {!!qrValue && <QRCode value={qrValue} size={150} />} */}
+                    {Boolean(qrValue) && <QRCode value={qrValue} size={150} />}
                     <h3 css={description}>{message}</h3>
                 </div>
             </div>

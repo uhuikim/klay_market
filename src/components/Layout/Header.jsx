@@ -3,31 +3,48 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { container } from 'styles/common/layout';
 import { palette } from 'styles/palette';
-
+import * as KlipAPI from 'api/klipApi';
 import { FaUser } from 'react-icons/fa';
-import { useDispatch } from 'react-redux';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { setOpen } from 'slices/modalSlice';
+import useGetUserData from 'hooks/useGetUserData';
+import { getBalance } from 'api/caverApi';
+import Modal from 'components/common/modal';
 
 const Header = () => {
-    const [isLogin, setLogin] = useState(false);
+    const [qrValue, setQrValue] = useState(null);
+    const [myAddress, setMyAddress] = useState(null);
+    const [myBalance, setMyBalance] = useState('0');
+
     const dispatch = useDispatch();
+
+    const getUserData = () => {
+        KlipAPI.getAddress(setQrValue, async (address) => {
+            setMyAddress(address);
+            const _balance = await getBalance(address);
+            setMyBalance(_balance);
+        });
+    };
+
     const handleModal = () => {
+        getUserData();
         dispatch(setOpen({ message: '로그인 하기' }));
     };
+
     return (
         <div css={header}>
             <div css={container}>
                 <div css={wrap}>
                     <h1 css={logo}>
-                        <Link to="/">Logo</Link>
+                        <Link to="/">Klay Market</Link>
                     </h1>
                     <nav css={navStyle}>
                         <ul>
-                            <li>a</li>
+                            <li>Mint</li>
                         </ul>
 
                         <div>
-                            {!isLogin ? (
+                            {!myAddress ? (
                                 <button
                                     type="button"
                                     css={signButton}
@@ -46,6 +63,7 @@ const Header = () => {
                     </nav>
                 </div>
             </div>
+            <Modal qrValue={qrValue} />
         </div>
     );
 };

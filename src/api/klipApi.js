@@ -1,15 +1,15 @@
-import axios from "axios";
-import { NFT_CONTRACT_ADDRESS } from "constants";
-import { APP_NAME } from "constants";
-import { A2P_API_REQUEST_URL, A2P_API_RESULT_URL, A2P_API_PREPARE_URL } from "constants";
+import axios from 'axios';
+import { NFT_CONTRACT_ADDRESS } from 'constants';
+import { APP_NAME } from 'constants';
+import { A2P_API_REQUEST_URL, A2P_API_RESULT_URL, A2P_API_PREPARE_URL } from 'constants';
 
 export const getAddress = (setQrValue, callback) => {
     axios
         .post(A2P_API_PREPARE_URL, {
             bapp: {
-                name: APP_NAME,
+                name: APP_NAME
             },
-            type: "auth",
+            type: 'auth'
         })
         .then((response) => {
             const { request_key: requestKey } = response.data;
@@ -22,30 +22,39 @@ export const getAddress = (setQrValue, callback) => {
             // }
 
             let timerId = setInterval(() => {
-                axios.get(`${A2P_API_RESULT_URL}?request_key=${requestKey}`).then((res) => {
-                    if (res.data.result) {
-                        callback(res.data.result.klaytn_address);
-                        clearInterval(timerId);
-                        setQrValue("DEFAULT");
-                    }
-                });
+                axios
+                    .get(`${A2P_API_RESULT_URL}?request_key=${requestKey}`)
+                    .then((res) => {
+                        if (res.data.result) {
+                            callback(res.data.result.klaytn_address);
+                            clearInterval(timerId);
+                            setQrValue('DEFAULT');
+                        }
+                    });
             }, 1000);
         });
 };
 
-export const executeContract = (txTo, functionJSON, value, params, setQrValue, callback) => {
+export const executeContract = (
+    txTo,
+    functionJSON,
+    value,
+    params,
+    setQrValue,
+    callback
+) => {
     axios
         .post(A2P_API_PREPARE_URL, {
             bapp: {
-                name: APP_NAME,
+                name: APP_NAME
             },
-            type: "execute_contract",
+            type: 'execute_contract',
             transaction: {
                 to: txTo,
                 value: value,
                 abi: functionJSON,
-                params: params,
-            },
+                params: params
+            }
         })
         .then((response) => {
             const { request_key: requestKey } = response.data;
@@ -58,18 +67,20 @@ export const executeContract = (txTo, functionJSON, value, params, setQrValue, c
             // }
 
             let timerId = setInterval(() => {
-                axios.get(`${A2P_API_RESULT_URL}?request_key=${requestKey}`).then((res) => {
-                    if (res.data.result) {
-                        callback(res.data.result.klaytn_address);
-                        console.log(res.data.result);
+                axios
+                    .get(`${A2P_API_RESULT_URL}?request_key=${requestKey}`)
+                    .then((res) => {
+                        if (res.data.result) {
+                            callback(res.data.result.klaytn_address);
+                            console.log(res.data.result);
 
-                        setQrValue("DEFAULT");
+                            setQrValue('DEFAULT');
 
-                        if (res.data.result.status === "success") {
-                            clearInterval(timerId);
+                            if (res.data.result.status === 'success') {
+                                clearInterval(timerId);
+                            }
                         }
-                    }
-                });
+                    });
             }, 1000);
         });
 };
@@ -77,5 +88,12 @@ export const executeContract = (txTo, functionJSON, value, params, setQrValue, c
 export const mintCardWithURI = async (toAddress, tokenId, uri, setQrValue, callback) => {
     const functionJSON =
         ' { "constant": false, "inputs": [ { "name": "to", "type": "address" }, { "name": "tokenId", "type": "uint256" }, { "name": "tokenURI", "type": "string" } ], "name": "mintWithTokenURI", "outputs": [ { "name": "", "type": "bool" } ], "payable": false, "stateMutability": "nonpayable", "type": "function" }';
-    executeContract(NFT_CONTRACT_ADDRESS, functionJSON, "0", `[\"${toAddress}\",\"${tokenId}\",\"${uri}\"]`, setQrValue, callback);
+    executeContract(
+        NFT_CONTRACT_ADDRESS,
+        functionJSON,
+        '0',
+        `[\"${toAddress}\",\"${tokenId}\",\"${uri}\"]`,
+        setQrValue,
+        callback
+    );
 };

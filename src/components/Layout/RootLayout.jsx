@@ -1,5 +1,4 @@
 import { css } from '@emotion/react';
-import Modal from 'components/common/modal';
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { container } from 'styles/common/layout';
@@ -14,7 +13,6 @@ const RootLayout = () => {
                 <Outlet />
             </main>
             <Footer />
-            <Modal />
         </div>
     );
 };
