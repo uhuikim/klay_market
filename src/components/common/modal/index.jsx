@@ -14,9 +14,16 @@ const Modal = ({ qrValue, modalText = 'Klip App 또는 KakaoTalk을 이용해 �
         }),
         shallowEqual
     );
+    const { address } = useSelector(
+        (state) => ({
+            address: state.login.address
+        }),
+        shallowEqual
+    );
 
     return (
-        isOpen && (
+        isOpen &&
+        !address && (
             <div css={modalContainer}>
                 <div css={container} id="popup-modal" tabIndex={-1}>
                     <button

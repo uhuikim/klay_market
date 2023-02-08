@@ -5,11 +5,11 @@ import { container } from 'styles/common/layout';
 import { palette } from 'styles/palette';
 import * as KlipAPI from 'api/klipApi';
 import { FaUser } from 'react-icons/fa';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { setOpen } from 'slices/modalSlice';
-import useGetUserData from 'hooks/useGetUserData';
 import { getBalance } from 'api/caverApi';
 import Modal from 'components/common/modal';
+import { setLogin } from 'slices/loginSlice';
 
 const Header = () => {
     const [qrValue, setQrValue] = useState(null);
@@ -23,6 +23,8 @@ const Header = () => {
             setMyAddress(address);
             const _balance = await getBalance(address);
             setMyBalance(_balance);
+
+            dispatch(setLogin({ address, balance: _balance }));
         });
     };
 
