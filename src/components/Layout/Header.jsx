@@ -42,7 +42,9 @@ const Header = () => {
                     </h1>
                     <nav css={navStyle}>
                         <ul>
-                            <li>Mint</li>
+                            <Link to="/mint">
+                                <li>Mint</li>
+                            </Link>
                         </ul>
 
                         <div>

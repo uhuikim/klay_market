@@ -47,28 +47,3 @@ export const getBalance = (address) => {
         return balance;
     });
 };
-
-// const countContract = new caver.contract(COUNT_ABI, COUNT_CONTRACT_ADDRESS);
-// export const setCount = async (newCount) => {
-//     try {
-//         // 사용할 accoutn설정
-//         const privatkey = "0xda837c85ee3fc39da210f5c3239636b0662e8b902402378658b87f4f0e2cafca";
-//         const deployer = caver.wallet.keyring.createFromPrivateKey(privatkey);
-//         caver.wallet.add(deployer);
-//         // 스마트 컨트랙트 실행 트랜잭션 날리기
-//         // 결과 확인
-
-//         const receipt = await countContract.methods.setCount(newCount).send({
-//             from: deployer.address,
-//             gas: "0x4bfd200",
-//         });
-//         console.log(receipt);
-//     } catch (e) {
-//         console.log(e);
-//     }
-// };
-
-// export const readCount = async () => {
-//     const _count = await countContract.methods.count().call();
-//     console.log(_count);
-// };
