@@ -1,21 +1,21 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useState } from 'react';
 import { fetchCardsOf, getBalance } from 'api/caverApi';
 import * as KlipAPI from 'api/klipApi';
 import * as CaverAPI from 'api/caverApi';
-import { DEFAULT_ADDRESS, DEFAULT_QR_CODE, NFT_MARKET_CONTRACT_ADDRESS } from 'constants';
-import QRCode from 'qrcode.react';
+import { DEFAULT_ADDRESS, NFT_MARKET_CONTRACT_ADDRESS } from 'constants';
 import Card from 'components/card';
 import { css } from '@emotion/react';
+import { setOpen } from 'slices/modalSlice';
+import { useDispatch } from 'react-redux';
 
 const Home = () => {
-    const [qrValue, setQrValue] = useState(DEFAULT_QR_CODE);
     const [myAddress, setMyAddress] = useState(DEFAULT_ADDRESS);
     const [myBalance, setMyBalance] = useState('0');
     const [marketNfts, setMarketNfts] = useState([]);
-
+    const dispatch = useDispatch();
     const getUserData = () => {
-        KlipAPI.getAddress(setQrValue, async (address) => {
+        KlipAPI.getAddress(async (address) => {
             setMyAddress(address);
             const _balance = await getBalance(address);
             setMyBalance(_balance);
@@ -30,20 +30,25 @@ const Home = () => {
 
     // Mint
 
-    // onClickMyCard
-
     // onClickMarketCard
+    const onClickMarketCard = (tokenId) => {
+        KlipAPI.buyCard(tokenId, (result) => {
+            alert(JSON.stringify(result));
+        });
+        dispatch(setOpen({ message: '팔기' }));
+    };
 
-    //getUserData
-
-    //getBalance
-    console.log(marketNfts);
     return (
         <div>
             <button onClick={fetchMarketNFT}>ddkdkdk</button>
             <div css={container}>
                 {marketNfts.map((nft) => (
-                    <Card key={nft.id} tokenUri={nft.tokenUri} tokenId={nft.id} />
+                    <Card
+                        onClick={() => onClickMarketCard(nft.id)}
+                        key={nft.id}
+                        tokenUri={nft.tokenUri}
+                        tokenId={nft.id}
+                    />
                 ))}
             </div>
         </div>

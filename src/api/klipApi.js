@@ -1,9 +1,12 @@
 import axios from 'axios';
+import { NFT_MARKET_CONTRACT_ADDRESS } from 'constants';
 import { NFT_CONTRACT_ADDRESS } from 'constants';
 import { APP_NAME } from 'constants';
 import { A2P_API_REQUEST_URL, A2P_API_RESULT_URL, A2P_API_PREPARE_URL } from 'constants';
+import { store } from 'app/store';
+import { setQrValue } from 'slices/modalSlice';
 
-export const getAddress = (setQrValue, callback) => {
+export const getAddress = (callback) => {
     axios
         .post(A2P_API_PREPARE_URL, {
             bapp: {
@@ -14,7 +17,8 @@ export const getAddress = (setQrValue, callback) => {
         .then((response) => {
             const { request_key: requestKey } = response.data;
             const klipConnectUrl = `${A2P_API_REQUEST_URL}?request_key=${requestKey}`;
-            setQrValue(klipConnectUrl);
+            store.dispatch(setQrValue({ qrValue: klipConnectUrl }));
+
             // if (isMobile) {
             //     window.location.href = klipConnectUrl;
             // } else {
@@ -35,14 +39,7 @@ export const getAddress = (setQrValue, callback) => {
         });
 };
 
-export const executeContract = (
-    txTo,
-    functionJSON,
-    value,
-    params,
-    setQrValue,
-    callback
-) => {
+export const executeContract = (txTo, functionJSON, value, params, callback) => {
     axios
         .post(A2P_API_PREPARE_URL, {
             bapp: {
@@ -59,7 +56,8 @@ export const executeContract = (
         .then((response) => {
             const { request_key: requestKey } = response.data;
             const klipConnectUrl = `${A2P_API_REQUEST_URL}?request_key=${requestKey}`;
-            setQrValue(klipConnectUrl);
+            store.dispatch(setQrValue({ qrValue: klipConnectUrl }));
+
             // if (isMobile) {
             //     window.location.href = klipConnectUrl;
             // } else {
@@ -73,8 +71,7 @@ export const executeContract = (
                         if (res.data.result) {
                             callback(res.data.result.klaytn_address);
                             console.log(res.data.result);
-
-                            setQrValue('DEFAULT');
+                            store.dispatch(setQrValue({ qrValue: 'DEFAULT' }));
 
                             if (res.data.result.status === 'success') {
                                 clearInterval(timerId);
@@ -85,7 +82,7 @@ export const executeContract = (
         });
 };
 
-export const mintCardWithURI = async (toAddress, tokenId, uri, setQrValue, callback) => {
+export const mintCardWithURI = async (toAddress, tokenId, uri, callback) => {
     const functionJSON =
         ' { "constant": false, "inputs": [ { "name": "to", "type": "address" }, { "name": "tokenId", "type": "uint256" }, { "name": "tokenURI", "type": "string" } ], "name": "mintWithTokenURI", "outputs": [ { "name": "", "type": "bool" } ], "payable": false, "stateMutability": "nonpayable", "type": "function" }';
     executeContract(
@@ -93,7 +90,30 @@ export const mintCardWithURI = async (toAddress, tokenId, uri, setQrValue, callb
         functionJSON,
         '0',
         `[\"${toAddress}\",\"${tokenId}\",\"${uri}\"]`,
-        setQrValue,
+        callback
+    );
+};
+
+export const buyCard = async (tokenId, callback) => {
+    const functionAbi = ` { "constant": false, "inputs": [ { "name": "tokenId", "type": "uint256" }, { "name": "NFTAddress", "type": "address" } ], "name": "buyNFT", "outputs": [ { "name": "", "type": "bool" } ], "payable": true, "stateMutability": "payable", "type": "function" }`;
+
+    executeContract(
+        NFT_MARKET_CONTRACT_ADDRESS,
+        functionAbi,
+        '10000000000000000',
+        `["${tokenId}","${NFT_CONTRACT_ADDRESS}"]`,
+        callback
+    );
+};
+
+export const sellCard = async (from, tokenId, callback) => {
+    const functionAbi = `{ "constant": false, "inputs": [ { "name": "from", "type": "address" }, { "name": "to", "type": "address" }, { "name": "tokenId", "type": "uint256" } ], "name": "safeTransferFrom", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }`;
+
+    executeContract(
+        NFT_CONTRACT_ADDRESS,
+        functionAbi,
+        '0',
+        `["${from}","${NFT_MARKET_CONTRACT_ADDRESS}","${tokenId}"]`,
         callback
     );
 };

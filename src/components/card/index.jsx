@@ -1,9 +1,9 @@
 import React from 'react';
 import { css } from '@emotion/react';
 
-const Card = ({ tokenId, tokenUri }) => {
+const Card = ({ tokenId, tokenUri, onClick }) => {
     return (
-        <div css={container}>
+        <div css={container} onClick={onClick}>
             <div css={imgWrap}>
                 <img src={tokenUri} alt="nft이미지" />
             </div>
@@ -16,6 +16,7 @@ const container = css`
     padding: 0.5rem;
     border-radius: 12px;
     box-shadow: rgb(30 31 36 / 15%) 0px 4px 8px;
+    cursor: pointer;
 `;
 const imgWrap = css`
     border-radius: 16px;

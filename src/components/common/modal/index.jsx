@@ -5,12 +5,13 @@ import { setClose } from 'slices/modalSlice';
 import { css } from '@emotion/react';
 import QRCode from 'qrcode.react';
 
-const Modal = ({ qrValue, modalText = 'Klip App 또는 KakaoTalk을 이용해 주세요' }) => {
+const Modal = () => {
     const dispatch = useDispatch();
-    const { isOpen, message } = useSelector(
+    const { isOpen, message, qrValue } = useSelector(
         (state) => ({
             isOpen: state.modal.isOpen,
-            message: state.modal.message
+            message: state.modal.message,
+            qrValue: state.modal.qrValue
         }),
         shallowEqual
     );
@@ -20,10 +21,9 @@ const Modal = ({ qrValue, modalText = 'Klip App 또는 KakaoTalk을 이용해 �
         }),
         shallowEqual
     );
-
+    console.log(isOpen);
     return (
-        isOpen &&
-        !address && (
+        isOpen && (
             <div css={modalContainer}>
                 <div css={container} id="popup-modal" tabIndex={-1}>
                     <button

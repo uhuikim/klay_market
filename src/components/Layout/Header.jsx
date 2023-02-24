@@ -5,32 +5,33 @@ import { container } from 'styles/common/layout';
 import { palette } from 'styles/palette';
 import * as KlipAPI from 'api/klipApi';
 import { FaUser } from 'react-icons/fa';
-import { useDispatch } from 'react-redux';
-import { setOpen } from 'slices/modalSlice';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { setClose, setOpen } from 'slices/modalSlice';
 import { getBalance } from 'api/caverApi';
-import Modal from 'components/common/modal';
 import { setLogin } from 'slices/loginSlice';
 
 const Header = () => {
-    const [qrValue, setQrValue] = useState(null);
-    const [myAddress, setMyAddress] = useState(null);
-    const [myBalance, setMyBalance] = useState('0');
+    const { address, balance } = useSelector(
+        (state) => ({
+            address: state.login.address,
+            balance: state.login.balance
+        }),
+        shallowEqual
+    );
 
     const dispatch = useDispatch();
 
     const getUserData = () => {
-        KlipAPI.getAddress(setQrValue, async (address) => {
-            setMyAddress(address);
+        KlipAPI.getAddress(async (address) => {
             const _balance = await getBalance(address);
-            setMyBalance(_balance);
-
             dispatch(setLogin({ address, balance: _balance }));
+            dispatch(setClose());
         });
     };
 
     const handleModal = () => {
         getUserData();
-        dispatch(setOpen({ message: '로그인 하기' }));
+        dispatch(setOpen({ message: 'Klip App 또는 KakaoTalk을 이용해 주세요' }));
     };
 
     return (
@@ -48,7 +49,7 @@ const Header = () => {
                         </ul>
 
                         <div>
-                            {!myAddress ? (
+                            {!address ? (
                                 <button
                                     type="button"
                                     css={signButton}
@@ -67,7 +68,6 @@ const Header = () => {
                     </nav>
                 </div>
             </div>
-            <Modal qrValue={qrValue} />
         </div>
     );
 };
