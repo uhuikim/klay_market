@@ -35,7 +35,7 @@ const Home = () => {
         KlipAPI.buyCard(tokenId, (result) => {
             alert(JSON.stringify(result));
         });
-        dispatch(setOpen({ message: '팔기' }));
+        dispatch(setOpen({ message: '사기' }));
     };
 
     return (

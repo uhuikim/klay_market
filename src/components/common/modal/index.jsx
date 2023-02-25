@@ -21,7 +21,6 @@ const Modal = () => {
         }),
         shallowEqual
     );
-    console.log(isOpen);
     return (
         isOpen && (
             <div css={modalContainer}>

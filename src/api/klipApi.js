@@ -55,6 +55,7 @@ export const executeContract = (txTo, functionJSON, value, params, callback) => 
         })
         .then((response) => {
             const { request_key: requestKey } = response.data;
+            console.log(requestKey);
             const klipConnectUrl = `${A2P_API_REQUEST_URL}?request_key=${requestKey}`;
             store.dispatch(setQrValue({ qrValue: klipConnectUrl }));
 
@@ -70,7 +71,6 @@ export const executeContract = (txTo, functionJSON, value, params, callback) => 
                     .then((res) => {
                         if (res.data.result) {
                             callback(res.data.result.klaytn_address);
-                            console.log(res.data.result);
                             store.dispatch(setQrValue({ qrValue: 'DEFAULT' }));
 
                             if (res.data.result.status === 'success') {
@@ -95,8 +95,8 @@ export const mintCardWithURI = async (toAddress, tokenId, uri, callback) => {
 };
 
 export const buyCard = async (tokenId, callback) => {
-    const functionAbi = ` { "constant": false, "inputs": [ { "name": "tokenId", "type": "uint256" }, { "name": "NFTAddress", "type": "address" } ], "name": "buyNFT", "outputs": [ { "name": "", "type": "bool" } ], "payable": true, "stateMutability": "payable", "type": "function" }`;
-
+    const functionAbi = `{"constant": false, "inputs": [ { "name": "tokenId", "type": "uint256" }, { "name": "NFTAddress", "type": "address" } ], "name": "buyNFT", "outputs": [ { "name": "", "type": "bool" } ], "payable": true, "stateMutability": "payable", "type": "function" }`;
+    console.log(tokenId);
     executeContract(
         NFT_MARKET_CONTRACT_ADDRESS,
         functionAbi,
