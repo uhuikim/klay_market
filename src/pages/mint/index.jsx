@@ -16,7 +16,11 @@ const Mint = () => {
 
     const onClickMint = async (e) => {
         e.preventDefault();
-        if (!address) return;
+        if (!address) {
+            dispatch(setOpen({ message: `NFT를 발행하려면 \n 로그인해주세요` }));
+            return;
+        }
+
         const uniqueTokenId = `${new Date().valueOf()}`;
         await KlipAPI.mintCardWithURI(
             address,
@@ -69,6 +73,7 @@ const button = css`
     padding: 0.5rem 1rem;
     border-radius: 8px;
     margin-left: 0.5rem;
+    cursor: pointer;
 `;
 const nftImage = css`
     width: 50%;
