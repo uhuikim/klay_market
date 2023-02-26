@@ -1,11 +1,19 @@
 import axios from 'axios';
-import { NFT_MARKET_CONTRACT_ADDRESS } from 'constants';
-import { NFT_CONTRACT_ADDRESS } from 'constants';
+import { NFT_CONTRACT_ADDRESS, NFT_MARKET_CONTRACT_ADDRESS } from 'constants';
 import { APP_NAME } from 'constants';
 import { A2P_API_REQUEST_URL, A2P_API_RESULT_URL, A2P_API_PREPARE_URL } from 'constants';
 import { store } from 'app/store';
 import { setQrValue } from 'slices/modalSlice';
 
+const isMobile = window.screen.width >= 1280 ? false : true;
+
+const getKlipAccessUrl = (method, requestKey) => {
+    if (method === 'QR') {
+        return `${A2P_API_REQUEST_URL}?request_key=${requestKey}`;
+    }
+
+    return `kakaotalk://klipwallet/open?url=https://klipwallet.com/?target=/a2a?request_key=${requestKey}`;
+};
 export const getAddress = (callback) => {
     axios
         .post(A2P_API_PREPARE_URL, {
@@ -16,14 +24,14 @@ export const getAddress = (callback) => {
         })
         .then((response) => {
             const { request_key: requestKey } = response.data;
-            const klipConnectUrl = `${A2P_API_REQUEST_URL}?request_key=${requestKey}`;
-            store.dispatch(setQrValue({ qrValue: klipConnectUrl }));
 
-            // if (isMobile) {
-            //     window.location.href = klipConnectUrl;
-            // } else {
-            //     setQrValue(klipConnectUrl);
-            // }
+            if (isMobile) {
+                window.location.href = getKlipAccessUrl('android', requestKey);
+            } else {
+                store.dispatch(
+                    setQrValue({ qrValue: getKlipAccessUrl('QR', requestKey) })
+                );
+            }
 
             let timerId = setInterval(() => {
                 axios
@@ -32,7 +40,7 @@ export const getAddress = (callback) => {
                         if (res.data.result) {
                             callback(res.data.result.klaytn_address);
                             clearInterval(timerId);
-                            setQrValue('DEFAULT');
+                            store.dispatch(setQrValue({ qrValue: 'DEFAULT' }));
                         }
                     });
             }, 1000);
@@ -55,15 +63,14 @@ export const executeContract = (txTo, functionJSON, value, params, callback) => 
         })
         .then((response) => {
             const { request_key: requestKey } = response.data;
-            console.log(requestKey);
-            const klipConnectUrl = `${A2P_API_REQUEST_URL}?request_key=${requestKey}`;
-            store.dispatch(setQrValue({ qrValue: klipConnectUrl }));
 
-            // if (isMobile) {
-            //     window.location.href = klipConnectUrl;
-            // } else {
-            //     setQrValue(klipConnectUrl);
-            // }
+            if (isMobile) {
+                window.location.href = getKlipAccessUrl('android', requestKey);
+            } else {
+                store.dispatch(
+                    setQrValue({ qrValue: getKlipAccessUrl('QR', requestKey) })
+                );
+            }
 
             let timerId = setInterval(() => {
                 axios
@@ -96,12 +103,12 @@ export const mintCardWithURI = async (toAddress, tokenId, uri, callback) => {
 
 export const buyCard = async (tokenId, callback) => {
     const functionAbi = `{"constant": false, "inputs": [ { "name": "tokenId", "type": "uint256" }, { "name": "NFTAddress", "type": "address" } ], "name": "buyNFT", "outputs": [ { "name": "", "type": "bool" } ], "payable": true, "stateMutability": "payable", "type": "function" }`;
-    console.log(tokenId);
+
     executeContract(
         NFT_MARKET_CONTRACT_ADDRESS,
         functionAbi,
         '10000000000000000',
-        `["${tokenId}","${NFT_CONTRACT_ADDRESS}"]`,
+        `[\"${tokenId}\",\"${NFT_CONTRACT_ADDRESS}\"]`,
         callback
     );
 };
@@ -113,7 +120,7 @@ export const sellCard = async (from, tokenId, callback) => {
         NFT_CONTRACT_ADDRESS,
         functionAbi,
         '0',
-        `["${from}","${NFT_MARKET_CONTRACT_ADDRESS}","${tokenId}"]`,
+        `[\"${from}\",\"${NFT_MARKET_CONTRACT_ADDRESS}\",\"${tokenId}\"]`,
         callback
     );
 };

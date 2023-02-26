@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { fetchCardsOf, getBalance } from 'api/caverApi';
 import * as KlipAPI from 'api/klipApi';
@@ -26,9 +26,6 @@ const Home = () => {
         const tokens = await CaverAPI.fetchCardsOf(NFT_MARKET_CONTRACT_ADDRESS);
         setMarketNfts(tokens || []);
     };
-    // fetchMyNFT
-
-    // Mint
 
     // onClickMarketCard
     const onClickMarketCard = (tokenId) => {
@@ -38,9 +35,12 @@ const Home = () => {
         dispatch(setOpen({ message: '사기' }));
     };
 
+    useEffect(() => {
+        fetchMarketNFT();
+    }, []);
+
     return (
         <div>
-            <button onClick={fetchMarketNFT}>ddkdkdk</button>
             <div css={container}>
                 {marketNfts.map((nft) => (
                     <Card

@@ -24,8 +24,6 @@ const My = () => {
         setMyNfts(tokens || []);
     };
     const onClickMyCard = (tokenId) => {
-        console.log(tokenId);
-
         KlipAPI.sellCard(address, tokenId, (result) => {
             alert(JSON.stringify(result));
         });
