@@ -15,12 +15,7 @@ const Modal = () => {
         }),
         shallowEqual
     );
-    const { address } = useSelector(
-        (state) => ({
-            address: state.login.address
-        }),
-        shallowEqual
-    );
+
     return (
         isOpen && (
             <div css={modalContainer}>
@@ -33,8 +28,12 @@ const Modal = () => {
                     >
                         <IoClose size={18} />
                     </button>
-                    {Boolean(qrValue) && <QRCode value={qrValue} size={150} />}
-                    <h3 css={description}>{message}</h3>
+                    <h3 css={title}>{message}</h3>
+                    <div css={qrWrap}>
+                        {Boolean(qrValue) && qrValue !== 'DEFAULT' && (
+                            <QRCode value={qrValue} size={150} />
+                        )}
+                    </div>
                 </div>
             </div>
         )
@@ -63,10 +62,12 @@ const container = css`
     background-color: white;
 `;
 
-const description = css`
-    font-size: 1rem;
+const title = css`
+    font-size: 1.3rem;
     font-weight: 600;
     word-break: break-all;
+    white-space: pre;
+    text-align: center;
 `;
 
 const closeButton = css`
@@ -77,6 +78,10 @@ const closeButton = css`
     background-color: transparent;
     color: black;
     cursor: pointer;
+`;
+
+const qrWrap = css`
+    margin-top: 1rem;
 `;
 
 export default Modal;

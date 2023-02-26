@@ -1,26 +1,23 @@
 import React, { useEffect } from 'react';
 import { useState } from 'react';
-import { fetchCardsOf, getBalance } from 'api/caverApi';
 import * as KlipAPI from 'api/klipApi';
 import * as CaverAPI from 'api/caverApi';
-import { DEFAULT_ADDRESS, NFT_MARKET_CONTRACT_ADDRESS } from 'constants';
+import { NFT_MARKET_CONTRACT_ADDRESS } from 'constants';
 import Card from 'components/card';
 import { css } from '@emotion/react';
-import { setOpen } from 'slices/modalSlice';
-import { useDispatch } from 'react-redux';
+import { setClose, setOpen } from 'slices/modalSlice';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 
 const Home = () => {
-    const [myAddress, setMyAddress] = useState(DEFAULT_ADDRESS);
-    const [myBalance, setMyBalance] = useState('0');
     const [marketNfts, setMarketNfts] = useState([]);
     const dispatch = useDispatch();
-    const getUserData = () => {
-        KlipAPI.getAddress(async (address) => {
-            setMyAddress(address);
-            const _balance = await getBalance(address);
-            setMyBalance(_balance);
-        });
-    };
+    const { address } = useSelector(
+        (state) => ({
+            address: state.login.address
+        }),
+        shallowEqual
+    );
+
     //fetch Market
     const fetchMarketNFT = async () => {
         const tokens = await CaverAPI.fetchCardsOf(NFT_MARKET_CONTRACT_ADDRESS);
@@ -29,10 +26,16 @@ const Home = () => {
 
     // onClickMarketCard
     const onClickMarketCard = (tokenId) => {
-        KlipAPI.buyCard(tokenId, (result) => {
-            alert(JSON.stringify(result));
+        if (!address) {
+            dispatch(setOpen({ message: `NFT를 구매하려면 \n 로그인해주세요` }));
+            return;
+        }
+
+        KlipAPI.buyCard(tokenId, () => {
+            dispatch(setClose());
+            setMarketNfts((prev) => prev.filter((nft) => nft.id !== tokenId));
         });
-        dispatch(setOpen({ message: '사기' }));
+        dispatch(setOpen({ message: 'NFT 구매하기' }));
     };
 
     useEffect(() => {

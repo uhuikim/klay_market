@@ -1,10 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { DEFAULT_ADDRESS } from 'constants';
+import { DEFAULT_QR_CODE } from 'constants';
 
 const initialState = {
     isOpen: false,
     message: '',
-    qrValue: DEFAULT_ADDRESS
+    qrValue: DEFAULT_QR_CODE
 };
 
 export const modalSlice = createSlice({
@@ -17,7 +17,7 @@ export const modalSlice = createSlice({
         },
         setClose: (state) => {
             state.isOpen = false;
-            state.qrValue = DEFAULT_ADDRESS;
+            state.qrValue = DEFAULT_QR_CODE;
         },
         setQrValue: (state, { payload }) => {
             state.qrValue = payload.qrValue;

@@ -31,7 +31,7 @@ const Header = () => {
 
     const handleModal = () => {
         getUserData();
-        dispatch(setOpen({ message: 'Klip App 또는 KakaoTalk을 이용해 주세요' }));
+        dispatch(setOpen({ message: 'Klip으로 로그인하기' }));
     };
 
     return (
